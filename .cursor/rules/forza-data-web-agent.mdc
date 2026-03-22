@@ -1,0 +1,36 @@
+---
+description: Agent instructions for ForzaDataWeb contributors
+alwaysApply: true
+---
+
+# ForzaDataWeb Agent Instructions
+
+## Project shape
+- This is a .NET 8 solution (`global.json`) with projects in `Core`, `Console`, `SampleRecorder`, `SampleFix`, `Web`, and `Tests`.
+- Keep protocol parsing and telemetry domain logic in `Core`; keep app-specific behavior in each executable project.
+- The `Web` project is classic ASP.NET Core MVC with Razor views and static assets under `wwwroot`.
+
+## Build and test workflow
+- Use these commands before finishing substantive changes:
+  - `dotnet restore --use-current-runtime`
+  - `dotnet build --no-restore --use-current-runtime`
+  - `dotnet test --no-build --verbosity normal`
+- If you only touch one project, prefer scoped commands (for example `dotnet test Tests/ForzaData.Tests.csproj`), then run full solution checks when practical.
+
+## Code style and formatting
+- Respect `.editorconfig` exactly:
+  - `.cs`, `.csproj`, `.cshtml`, `.props`, `.sln`: tabs and UTF-8 BOM
+  - `.json`, `.yml`, `.yaml`: 2 spaces
+  - default text: 4 spaces, CRLF
+- Do not reformat unrelated files; keep diffs focused to requested behavior.
+- Follow nullable-enabled C# patterns (`Nullable=enable`) and avoid introducing nullability warnings.
+
+## Testing and safety
+- Add or update MSTest coverage in `Tests` when parser behavior or data contracts change.
+- Preserve backward compatibility for known packet variants (`Sled`, `CarDashV1`, `CarDashV2`, extras) unless a breaking change is explicitly requested.
+- Prefer deterministic tests using sample payloads under `Samples` instead of ad hoc network dependencies.
+
+## Agent behavior expectations
+- Make minimal, targeted edits and document assumptions when protocol details are uncertain.
+- Do not add dependencies or frameworks unless they are necessary for the requested change.
+- When changing telemetry structures, also update reader logic, tests, and any affected UI/CLI output paths in the same change.
